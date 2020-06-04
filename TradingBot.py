@@ -1,47 +1,30 @@
-import datetime
-import os.path
-import sys
-
-# Import the backtrader platform
+# Imports
 import backtrader as bt
 
-from Stratergys.GoldenCrossStratergy import ScalpStrategy
+from bin.alpha_vantage_class import StockDataAPI
+from bin.backtesting_class import Backtest
+from bin.Stratergys.GoldenCrossStratergy import ScalpStrategy
 
 
-if __name__ == '__main__':
-    cerebro = bt.Cerebro()
+if __name__=='__main__':
+    
+    data_api = StockDataAPI('U94KFBUMZ4SY7DRA')
+    # data = data_api.get_intraday_data('MSFT', '1min')[0]
+    data = data_api.get_intraday_data('BA', '1min')[0]
 
-    # strats = cerebro.optstrategy(
-    #     ScalpStrategy,
-    #     logging=False,
-    #     ema_small=range(3,12),
-    #     ema_meduim=range(12, 21))
+    data.rename(columns={'date':'Date',
+                         '2. high':'High',
+                         '5. volume':'Volume',
+                         '3. low':'Low',
+                         '1. open':'Open',
+                         '4. close':'Close'},
+                inplace=True)
 
-    cerebro.addstrategy(ScalpStrategy)
+    print(data)
 
-    modpath = os.path.dirname(os.path.abspath(sys.argv[0]))
-    datapath = os.path.join(modpath, './datas/BARCL.csv')
+    data = bt.feeds.PandasData(dataname=data)
 
-    # Create a Data Feed
-    data = bt.feeds.YahooFinanceCSVData(
-        dataname=datapath,
-        fromdate=datetime.datetime(2018, 1, 1),
-        todate=datetime.datetime(2020, 5, 28),
-        reverse=False)
+    broker = Backtest(ScalpStrategy, commission=0.01)
 
-
-    cerebro.adddata(data)
-    cerebro.broker.setcash(1000.0)
-    cerebro.broker.setcommission(commission=0.01)
-
-    # Print out the starting conditions
-    print('Starting Portfolio Value: %.2f' % cerebro.broker.getvalue())
-
-    # Run over everything
-    cerebro.run(maxcpus=1)
-
-    # Print out the final result
-    print('Final Portfolio Value: %.2f' % cerebro.broker.getvalue())
-
-    # Plot the result
-    cerebro.plot(style='candlestick')
+    broker.run_strat_on_data(data)
+    broker.plot_results()

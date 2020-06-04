@@ -31,6 +31,11 @@ class ScalpStrategy(bt.Strategy):
         self.ema_s = bt.indicators.ExponentialMovingAverage(self.datas[0], period=self.params.ema_small)
         self.ema_m = bt.indicators.ExponentialMovingAverage(self.datas[0], period=self.params.ema_meduim)
 
+        # Plot things
+        self.buysell_ob = bt.observers.BuySell()
+        self.value_ob = bt.observers.Cash()
+        self.trades_ob = bt.observers.Trades()
+
         # Flags
         self.s_above_m = False
 
