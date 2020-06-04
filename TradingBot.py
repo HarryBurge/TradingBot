@@ -20,7 +20,7 @@ if __name__ == '__main__':
     cerebro.addstrategy(ScalpStrategy)
 
     modpath = os.path.dirname(os.path.abspath(sys.argv[0]))
-    datapath = os.path.join(modpath, './BARCL.csv')
+    datapath = os.path.join(modpath, './datas/BARCL.csv')
 
     # Create a Data Feed
     data = bt.feeds.YahooFinanceCSVData(
@@ -44,4 +44,4 @@ if __name__ == '__main__':
     print('Final Portfolio Value: %.2f' % cerebro.broker.getvalue())
 
     # Plot the result
-    cerebro.plot()
+    cerebro.plot(style='candlestick')
