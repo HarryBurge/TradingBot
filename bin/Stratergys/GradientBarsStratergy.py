@@ -96,8 +96,8 @@ class ScalpStrategy(bt.Strategy):
             coords.append((self.datatime[i], self.dataclose[i]))
 
         print(coords)
-        input()
         print(line_of_best_fit(*coords))
+        input()
 
     def close_stratergy(self):
         pass

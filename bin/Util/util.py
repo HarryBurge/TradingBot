@@ -6,7 +6,7 @@ def line_of_best_fit(*args):
     xmatrix = []
 
     for x,y in args:
-        yvector.append([y])
+        yvector.append([round(y, 4)])
         xmatrix.append([x, 1])
 
     yvector = numpy.array(yvector)
