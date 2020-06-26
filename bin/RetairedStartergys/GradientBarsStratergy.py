@@ -4,7 +4,7 @@ import backtrader as bt
 from bin.Util.util import line_of_best_fit
 
 # Create a Stratey
-class ScalpStrategy(bt.Strategy):
+class GradientBarsStrategy(bt.Strategy):
     params = (
         ('logging', True),
         ('long_rolling_gradient', 5)
@@ -95,9 +95,9 @@ class ScalpStrategy(bt.Strategy):
         for i in range(-self.params.long_rolling_gradient, 1):
             coords.append((self.datatime[i], self.dataclose[i]))
 
-        print(coords)
-        print(line_of_best_fit(*coords))
-        input()
+        # print(coords)
+        # print(line_of_best_fit(*coords))
+        # input()
 
     def close_stratergy(self):
         pass

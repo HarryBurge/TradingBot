@@ -3,15 +3,17 @@ import backtrader as bt
 
 from bin.alpha_vantage_class import StockDataAPI
 from bin.backtesting_class import Backtest
-# from bin.Stratergys.GoldenCrossStratergy import ScalpStrategy
-from bin.Stratergys.GradientBarsStratergy import ScalpStrategy
+
+from bin.Stratergys.GoldenCrossStratergy import GoldenCrossStrategy
+from bin.Stratergys.BlankStratergy import BlankStrategy
+from bin.Stratergys.EmaGradientIn_FollowOutStratergy import EmaGradientInFollowOutStrategy
 
 
 if __name__=='__main__':
     
     data_api = StockDataAPI('U94KFBUMZ4SY7DRA')
-    data = data_api.get_intraday_data('MSFT', '1min')[0]
-    # data = data_api.get_intraday_data('BA', '1min')[0]
+    # data = data_api.get_intraday_data('MSFT', '1min')[0]
+    data = data_api.get_intraday_data('BA', '1min')[0]
 
     data.rename(columns={'date':'Date',
                          '2. high':'High',
@@ -21,11 +23,12 @@ if __name__=='__main__':
                          '4. close':'Close'},
                 inplace=True)
 
-    print(data)
+    # Flip because data is inverted
+    data = data.reindex(index=data.index[::-1])
 
     data = bt.feeds.PandasData(dataname=data)
 
-    broker = Backtest(ScalpStrategy, commission=0.00)
+    broker = Backtest(EmaGradientInFollowOutStrategy, commission=0.00, optimise=False) #0.005
 
     broker.run_strat_on_data(data)
     broker.plot_results()
