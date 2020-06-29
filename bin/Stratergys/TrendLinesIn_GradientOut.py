@@ -1,11 +1,13 @@
 # Import the backtrader platform
 import backtrader as bt
 
+from bin.Observers.peaks_and_troofs import PeaksAndTroofs
+
 
 # Create a Stratey
 class BlankStrategy(bt.Strategy):
     params = (
-        ('logging', True),
+        ('logging', False),
     )
     def __init__(self):
         # Keep a reference's to the line in the data[0] dataseries
@@ -18,10 +20,16 @@ class BlankStrategy(bt.Strategy):
         # To keep track of pending orders and buy price/commission
         self.order = None
 
+        self.count = 0
+
         # Plot things
-        self.buysell_ob = bt.observers.BuySell()
+        # self.buysell_ob = bt.observers.BuySell()
         self.value_ob = bt.observers.Cash()
         self.trades_ob = bt.observers.Trades()
+
+        # Plots peaks and troofs
+        self.peaks_and_troofs_ob = PeaksAndTroofs
+        self.env.addobservermulti(self.peaks_and_troofs_ob)
 
 
     # Logging
@@ -29,7 +37,6 @@ class BlankStrategy(bt.Strategy):
         if force_print or self.params.logging:
             dt = dt or self.datas[0].datetime.date(0)
             print('%s, %s' % (dt.isoformat(), txt))
-
 
     def notify_order(self, order):
         if order.status in [order.Submitted, order.Accepted]:
@@ -74,6 +81,16 @@ class BlankStrategy(bt.Strategy):
     # Funcs
     def next(self):
         self.log(self.dataclose[0])
+
+        self.count += 1
+
+        if self.count == 100:
+            self.peaks_and_troofs_ob.addpoint(self.peaks_and_troofs_ob,'peak', self.dataclose[0])
+            self.count = 0
+        elif self.count == 50:
+            self.peaks_and_troofs_ob.addpoint(self.peaks_and_troofs_ob,'troof', self.dataclose[0])
+        # self.peaks_and_troofs_ob.addpoint(self.peaks_and_troofs_ob, 'troof', self.datalow[0])
+      
         # Check if an order is pending ... if yes, we cannot send a 2nd one
         if self.order:
             return
@@ -82,12 +99,12 @@ class BlankStrategy(bt.Strategy):
         elif not self.position:
             # Do check for if you want to buy then buy
             if self.long_stratergy():
-                pass
+                self.order = self.buy()
 
         else:
             # Do check to see if you want to sell use .close() it is easier
             if self.close_stratergy():
-                pass
+                self.order = self.close()
 
 
     def long_stratergy(self):

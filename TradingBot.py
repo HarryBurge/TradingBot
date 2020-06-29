@@ -5,8 +5,8 @@ from bin.alpha_vantage_class import StockDataAPI
 from bin.backtesting_class import Backtest
 
 from bin.Stratergys.GoldenCrossStratergy import GoldenCrossStrategy
-from bin.Stratergys.BlankStratergy import BlankStrategy
 from bin.Stratergys.EmaGradientIn_FollowOutStratergy import EmaGradientInFollowOutStrategy
+from bin.Stratergys.TrendLinesIn_GradientOut import BlankStrategy
 
 
 if __name__=='__main__':
@@ -24,11 +24,11 @@ if __name__=='__main__':
                 inplace=True)
 
     # Flip because data is inverted
-    data = data.reindex(index=data.index[::-1])
+    # data = data.reindex(index=data.index[::-1])
 
     data = bt.feeds.PandasData(dataname=data)
 
-    broker = Backtest(EmaGradientInFollowOutStrategy, commission=0.00, optimise=False) #0.005
+    broker = Backtest(BlankStrategy, commission=0.00, optimise=False) #0.005
 
     broker.run_strat_on_data(data)
     broker.plot_results()
