@@ -23,7 +23,7 @@ class Backtest:
                     stratergy,
                     logging = False,
                     percentage_sell_bar = numpy.arange(0.001, 0.05, 0.001)
-                    )
+            )
 
     
     def run_strat_on_data(self, data):
