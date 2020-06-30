@@ -24,7 +24,11 @@ if __name__=='__main__':
                 inplace=True)
 
     # Flip because data is inverted
-    # data = data.reindex(index=data.index[::-1])
+    data = data.reindex(index=data.index[::-1])
+
+    # Shorten data
+    data = data.truncate('2020-06-24 09:35:00', '2020-06-24 10:35:00')
+    print(data)
 
     data = bt.feeds.PandasData(dataname=data)
 

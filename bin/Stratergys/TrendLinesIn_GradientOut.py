@@ -2,6 +2,7 @@
 import backtrader as bt
 
 from bin.Observers.peaks_and_troofs import PeaksAndTroofs
+from bin.Util.util import points_of_gradient_change
 
 
 # Create a Stratey
@@ -20,10 +21,8 @@ class BlankStrategy(bt.Strategy):
         # To keep track of pending orders and buy price/commission
         self.order = None
 
-        self.count = 0
-
         # Plot things
-        # self.buysell_ob = bt.observers.BuySell()
+        self.buysell_ob = bt.observers.BuySell()
         self.value_ob = bt.observers.Cash()
         self.trades_ob = bt.observers.Trades()
 
@@ -82,14 +81,23 @@ class BlankStrategy(bt.Strategy):
     def next(self):
         self.log(self.dataclose[0])
 
-        self.count += 1
+        # # Go through all prevoius points and get peaks and troofs
+        # yvalues = [self.dataclose[-i] for i in range(len(self.dataclose)-1)]
+        # yvalues.reverse()
 
-        if self.count == 100:
-            self.peaks_and_troofs_ob.addpoint(self.peaks_and_troofs_ob,'peak', self.dataclose[0])
-            self.count = 0
-        elif self.count == 50:
-            self.peaks_and_troofs_ob.addpoint(self.peaks_and_troofs_ob,'troof', self.dataclose[0])
-        # self.peaks_and_troofs_ob.addpoint(self.peaks_and_troofs_ob, 'troof', self.datalow[0])
+        # points = points_of_gradient_change(yvalues, 3)
+
+        # print(points)
+
+        # if len(points) > 1:
+        #     self.peaks_and_troofs_ob.addpoint(self.peaks_and_troofs_ob, -points[-1], 'peak', self.dataclose[-points[-1]])
+
+        print('Running', len(self.dataclose))
+
+        if len(self.dataclose) % 10 == 0:
+            self.peaks_and_troofs_ob.addpoint(self.peaks_and_troofs_ob, 0, 'peak', self.dataclose[0])
+        elif len(self.dataclose) % 5 == 0:
+            self.peaks_and_troofs_ob.addpoint(self.peaks_and_troofs_ob, 0, 'troof', self.dataclose[0])
       
         # Check if an order is pending ... if yes, we cannot send a 2nd one
         if self.order:
@@ -99,7 +107,8 @@ class BlankStrategy(bt.Strategy):
         elif not self.position:
             # Do check for if you want to buy then buy
             if self.long_stratergy():
-                self.order = self.buy()
+                # self.order = self.buy()
+                pass
 
         else:
             # Do check to see if you want to sell use .close() it is easier

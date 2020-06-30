@@ -20,22 +20,28 @@ class PeaksAndTroofs(Observer):
         ('bardist', 0.015),  # distance to max/min in absolute perc
     )
 
-    typepoint = [None]
-    yvaluepoint = [None]
+    typepoint = []
+    yvaluepoint = []
+    index = []
 
     def next(self):
-        if self.yvaluepoint[-1] != None and self.typepoint[-1] != None:
 
-            if self.typepoint[-1] == 'peak':
-                self.lines.peak[0] = copy.deepcopy(self.yvaluepoint[-1])
+        if self.yvaluepoint != [] and self.typepoint != [] and self.index != []:
 
-            elif self.typepoint[-1] == 'troof':
-                self.lines.troof[0] = copy.deepcopy(self.yvaluepoint[-1])
+            for i in range(len(self.index)):
 
-            self.typepoint.append(None)
-            self.yvaluepoint.append(None)
-        
+                if self.typepoint[i] == 'peak':
+                    self.lines.peak[self.index[i]] = copy.deepcopy(self.yvaluepoint[i])
 
-    def addpoint(self, typepoint, yvalue):
-        self.typepoint.append(typepoint)
-        self.yvaluepoint.append(yvalue)
+                elif self.typepoint == 'troof':
+                    self.lines.troof[self.index[i]] = copy.deepcopy(self.yvaluepoint[i])
+
+            # self.typepoint = []
+            # self.yvaluepoint = []
+            # self.index = []
+ 
+
+    def addpoint(self, index, typepoint, yvalue):
+        self.typepoint.append(copy.deepcopy(typepoint))
+        self.yvaluepoint.append(copy.deepcopy(yvalue))
+        self.index.append(copy.deepcopy(index))
